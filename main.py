@@ -1,4 +1,6 @@
 import socket
+import threading
+from time import sleep
 
 '''
 Скринкаст к 6 семинару по сетям
@@ -19,8 +21,21 @@ ya_sock.send(data_out)
 # \r\n - перевод каретки
 # \r\n\r\n - в конце два раза перевод каретки
 
-data_in = ya_sock.recv(1024)
-# по сколько байт она будет перехватывать на сетевой карте
-# принимаем ответ в размере 1024 байта
-# перехват записываем в переменную data_in
+
+data_in = b""
+
+
+def receive():
+    global data_in
+    while True:
+        data_chunk = ya_sock.recv(1024)
+        data_in = data_in + data_chunk
+
+
+rec_thread = threading.Thread(target=receive)
+rec_thread.start()
+
+sleep(4)
 print(data_in)
+
+ya_sock.close()
